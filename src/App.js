@@ -53,7 +53,7 @@ export default function App() {
   }
 
   function canAddFile(filename) {
-    return !files.some(file => file.name === filename)
+    return !files.some(file => file.file.name === filename)
   }
 
   async function beginZip() {
@@ -111,7 +111,7 @@ export default function App() {
               <input {...getInputProps()} />
               <Button variant='outlined' disabled={zipping}>Добавить файл</Button>
             </div>
-            <Button variant='outlined' color='error' onClick={() => setFiles([])} disabled={zipping}>Очистить</Button>
+            <Button variant='outlined' color='error' onClick={() => setFiles(files => files.map(x =>deleteFile(x.file.name)))} disabled={zipping}>Очистить</Button>
           </Box>
           {zipping ? <LinearProgress variant='determinate' value={progress} style={{ width: '100%', position: 'absolute', bottom: '10px' }} /> : null}
         </>
