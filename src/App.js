@@ -3,7 +3,7 @@ import { Box, Button, CircularProgress, IconButton, LinearProgress, List, ListIt
 import { useEffect, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 
-const HOST = process.env.prod === 'prod' ? 'http://archive.mrcheat.org:8080' : 'http://localhost:8080'
+const HOST = process.env.mode === 'prod' ? 'http://archive.mrcheat.org:8080' : 'http://localhost:8080'
 
 export default function App() {
   /** @type {[File[], React.Dispatch<React.SetStateAction<File[]>>]} */
