@@ -3,6 +3,8 @@ import { Box, Button, CircularProgress, IconButton, LinearProgress, List, ListIt
 import { useEffect, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 
+const HOST = process.env.prod === 'prod' ? 'http://archive.mrcheat.org:8080' : 'http://localhost:8080'
+
 export default function App() {
   /** @type {[File[], React.Dispatch<React.SetStateAction<File[]>>]} */
   const [zipping, setZipping] = useState(false)
@@ -20,7 +22,7 @@ export default function App() {
         const body = new FormData()
         body.append('file', file)
         try {
-          await fetch('http://localhost:8080/upload/' + id, {
+          await fetch(`${HOST}/upload/${id}`, {
             method: 'POST',
             body,
             signal: abort.signal
@@ -40,7 +42,7 @@ export default function App() {
   })
 
   useEffect(() => {
-    fetch('http://localhost:8080/begin')
+    fetch(`${HOST}/begin`)
       .then(i => i.text())
       .then(setId)
   }, [])
@@ -49,7 +51,7 @@ export default function App() {
     const file = files.find(file => file.file.name === filename)
     file.abort.abort()
     setFiles(files => files.filter(file => file.file.name !== filename))
-    await fetch('http://localhost:8080/delete/' + id + '/' + filename)
+    await fetch(`${HOST}/delete/${id}/${filename}`)
   }
 
   function canAddFile(filename) {
@@ -59,11 +61,11 @@ export default function App() {
   async function beginZip() {
     setZipping(true)
     while (progress !== 100) {
-      const resp = await fetch('http://localhost:8080/zip/' + id)
+      const resp = await fetch(`'${HOST}/zip/${id}`)
       const json = await resp.json()
       setProgress(json.progress)
       if (json.progress === 100) {
-        document.getElementById('download_frame').src = 'http://localhost:8080/download/' + id
+        document.getElementById('download_frame').src = `${HOST}/download/${id}`
         setZipping(false)
         setProgress(0)
         return
@@ -111,7 +113,7 @@ export default function App() {
               <input {...getInputProps()} />
               <Button variant='outlined' disabled={zipping}>Добавить файл</Button>
             </div>
-            <Button variant='outlined' color='error' onClick={() => setFiles(files => files.map(x =>deleteFile(x.file.name)))} disabled={zipping}>Очистить</Button>
+            <Button variant='outlined' color='error' onClick={() => files.map(x => deleteFile(x.file.name))} disabled={zipping}>Очистить</Button>
           </Box>
           {zipping ? <LinearProgress variant='determinate' value={progress} style={{ width: '100%', position: 'absolute', bottom: '10px' }} /> : null}
         </>
